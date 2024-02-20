@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import NavMenu from "@/components/menu/Menu";
 import { ThemeProvider } from "@/components/theme-provider";
+import TransformContextProvider from "@/components/canvas/TransformProvider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -26,8 +27,10 @@ export default function RootLayout({
         )}
       >
         <ThemeProvider attribute="class" defaultTheme="system">
-          <NavMenu />
-          {children}
+          <TransformContextProvider>
+            <NavMenu />
+            {children}
+          </TransformContextProvider>
         </ThemeProvider>
       </body>
     </html>

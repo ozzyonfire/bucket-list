@@ -1,19 +1,19 @@
+"use client";
+
 import { useDndMonitor, useDraggable } from "@dnd-kit/core";
-import { Button } from "../ui/button";
-import { cn } from "@/lib/utils";
 import { CSSProperties, useContext, useState } from "react";
-import { DndHelperContext } from "./DnD";
+import { TransformContext } from "../canvas/TransformProvider";
 
 export default function Draggable(props: {
   id: string;
+  handle?: React.ReactNode;
   children: React.ReactNode;
 }) {
   const { id } = props;
-  const { scale } = useContext(DndHelperContext);
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({
-      id,
-    });
+  const { scale } = useContext(TransformContext);
+  const { setNodeRef, transform } = useDraggable({
+    id,
+  });
   const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
 
   const transformStyles: CSSProperties = {
@@ -39,23 +39,12 @@ export default function Draggable(props: {
   });
 
   return (
-    <Button
-      onClick={(e) => {
-        e.stopPropagation();
-      }}
+    <div
       ref={setNodeRef}
       style={transformStyles}
-      className={cn(
-        {
-          "bg-blue-500": isDragging,
-        },
-        "absolute"
-        // transformStyles
-      )}
-      {...listeners}
-      {...attributes}
+      className="absolute draggable"
     >
       {props.children}
-    </Button>
+    </div>
   );
 }

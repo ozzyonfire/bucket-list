@@ -97,3 +97,38 @@ export async function validate() {
     };
   }
 }
+
+export async function createList(formData: FormData) {
+  const title = formData.get("title") as string;
+  const userId = await validateSessionCookie();
+  const list = await prisma.list.create({
+    data: {
+      title: title,
+      userId: userId,
+    },
+  });
+  revalidatePath("/");
+}
+
+export async function getLists(userId: number) {
+  return prisma.list.findMany({
+    where: {
+      userId,
+    },
+    include: {
+      items: true,
+    },
+  });
+}
+
+export async function addItem(formData: FormData) {
+  const title = formData.get("new-item") as string;
+  const listId = parseInt(formData.get("listId") as string);
+  await prisma.item.create({
+    data: {
+      content: title,
+      listId: listId,
+    },
+  });
+  revalidatePath("/");
+}
