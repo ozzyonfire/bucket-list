@@ -100,11 +100,15 @@ export async function validate() {
 
 export async function createList(formData: FormData) {
   const title = formData.get("title") as string;
+  const isPublic = formData.get("public") === "on";
+  const description = formData.get("description") as string;
   const userId = await validateSessionCookie();
-  const list = await prisma.list.create({
+  await prisma.list.create({
     data: {
       title: title,
       userId: userId,
+      private: !isPublic,
+      description: description,
     },
   });
   revalidatePath("/");
@@ -130,5 +134,36 @@ export async function addItem(formData: FormData) {
       listId: listId,
     },
   });
+  revalidatePath("/");
+}
+
+export async function swapItems(firstItemId: number, secondItemId: number) {
+  const firstItem = await prisma.item.findUnique({
+    where: {
+      id: firstItemId,
+    },
+  });
+  const secondItem = await prisma.item.findUnique({
+    where: {
+      id: secondItemId,
+    },
+  });
+  if (firstItem && secondItem) {
+    const firstOrder = firstItem.order;
+    firstItem.order = secondItem.order;
+    secondItem.order = firstOrder;
+    await prisma.item.update({
+      where: {
+        id: firstItemId,
+      },
+      data: firstItem,
+    });
+    await prisma.item.update({
+      where: {
+        id: secondItemId,
+      },
+      data: secondItem,
+    });
+  }
   revalidatePath("/");
 }

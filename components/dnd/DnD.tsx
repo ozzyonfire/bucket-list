@@ -5,7 +5,7 @@ import Canvas from "../canvas/Canvas";
 import Draggable from "./Draggable";
 import Droppable from "./Droppable";
 import { Item, List } from "@prisma/client";
-import ListCard from "../ListCard";
+import ListCard from "../list/ListCard";
 
 export default function DnD({
   lists,

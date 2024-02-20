@@ -34,6 +34,12 @@ export default function NewListButton() {
         <form id="new-list-form" action={createList}>
           <div className="flex flex-col gap-2">
             <Input required type="text" name="title" placeholder="Title" />
+            <Input
+              required
+              type="text"
+              name="description"
+              placeholder="Description"
+            />
             <div className="flex flex-row items-center gap-2">
               <Switch name="public" id="public" />
               <Label htmlFor="public">Public</Label>

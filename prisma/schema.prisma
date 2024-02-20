@@ -21,7 +21,7 @@ model Item {
   icon      String?
   link      String?
   picture   String?
-  order     Int?
+  order     Int      @default(0)
   children  Item[]   @relation("ItemToItem")
   parent    Item?    @relation("ItemToItem", fields: [parentId], references: [id])
   parentId  Int?
@@ -30,16 +30,17 @@ model Item {
 }
 
 model List {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String
-  items     Item[]   @relation("ListToItem")
-  user      User?    @relation(fields: [userId], references: [id])
-  userId    Int?
-  topic     Topic?   @relation(fields: [topicId], references: [id])
-  topicId   Int?
-  private   Boolean  @default(false)
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  description String?
+  title       String
+  items       Item[]   @relation("ListToItem")
+  user        User?    @relation(fields: [userId], references: [id])
+  userId      Int?
+  topic       Topic?   @relation(fields: [topicId], references: [id])
+  topicId     Int?
+  private     Boolean  @default(false)
 }
 
 model User {
