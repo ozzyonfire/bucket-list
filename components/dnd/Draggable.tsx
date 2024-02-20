@@ -1,20 +1,29 @@
 "use client";
 
 import { useDndMonitor, useDraggable } from "@dnd-kit/core";
-import { CSSProperties, useContext, useState } from "react";
+import { CSSProperties, useContext, useEffect, useState } from "react";
 import { TransformContext } from "../canvas/TransformProvider";
 
 export default function Draggable(props: {
   id: string;
-  handle?: React.ReactNode;
   children: React.ReactNode;
+  coodinates?: { x: number; y: number };
+  onCoordinatesChange?: (coords: { x: number; y: number }) => void;
 }) {
-  const { id } = props;
+  const { id, coodinates, onCoordinatesChange, children } = props;
   const { scale } = useContext(TransformContext);
   const { setNodeRef, transform } = useDraggable({
     id,
   });
-  const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
+  const [coordinates, setCoordinates] = useState({
+    x: coodinates?.x || 0,
+    y: coodinates?.y || 0,
+  });
+
+  useEffect(() => {
+    onCoordinatesChange?.(coordinates);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [coordinates]);
 
   const transformStyles: CSSProperties = {
     transform: transform
@@ -44,7 +53,7 @@ export default function Draggable(props: {
       style={transformStyles}
       className="absolute draggable"
     >
-      {props.children}
+      {children}
     </div>
   );
 }

@@ -1,10 +1,12 @@
-import { addItem, swapItems } from "@/app/actions";
+"use client";
+
+import { addItem, swapItems, updateListCoordinates } from "@/app/actions";
 import { cn } from "@/lib/utils";
 import { DndContext, useDraggable } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
 import type { Item, List } from "@prisma/client";
 import { GripVertical, MoreHorizontal, Plus } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Draggable from "../dnd/Draggable";
 import { Button } from "../ui/button";
 import {
@@ -31,6 +33,7 @@ export default function ListCard({
     });
 
   const [items, setItems] = useState<Item[]>(list.items);
+  const addItemRef = useRef<HTMLFormElement>(null);
 
   const sortableItems = items.sort((a, b) => {
     return a.order - b.order;
@@ -47,8 +50,41 @@ export default function ListCard({
     await swapItems(itemA, itemB);
   };
 
+  const handleAddItem = async (formData: FormData) => {
+    setItems((prev) => {
+      const newItems = [
+        ...prev,
+        {
+          id: Math.floor(Math.random() * 1000000),
+          content: formData.get("new-item") as string,
+          order: prev.length + 1,
+          listId: list.id,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          done: false,
+          icon: null,
+          link: null,
+          parentId: null,
+          picture: null,
+        },
+      ];
+      return newItems;
+    });
+    addItemRef.current?.reset();
+    await addItem(formData);
+  };
+
+  const handleCoordinatesChange = ({ x, y }: { x: number; y: number }) => {
+    console.log(x, y);
+    updateListCoordinates(list.id, x, y);
+  };
+
   return (
-    <Draggable id={list.id.toString()}>
+    <Draggable
+      id={list.id.toString()}
+      onCoordinatesChange={handleCoordinatesChange}
+      coodinates={{ x: list.x || 0, y: list.y || 0 }}
+    >
       <Card
         className={cn("w-[350px] transition-all shadow-md", {
           "shadow-xl": isDragging,
@@ -71,7 +107,7 @@ export default function ListCard({
           </Button>
         </CardHeader>
         <CardContent>
-          <form action={addItem}>
+          <form action={handleAddItem} ref={addItemRef}>
             <div className="flex flex-row gap-2">
               <input hidden name="listId" defaultValue={list.id} />
               <Input

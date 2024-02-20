@@ -72,6 +72,7 @@ export async function registerUser(formData: FormData) {
   try {
     await register(email, password);
     revalidatePath("/");
+    redirect("/");
   } catch (e) {
     console.log("error", e);
     return "Error registering user";
@@ -166,4 +167,20 @@ export async function swapItems(firstItemId: number, secondItemId: number) {
     });
   }
   revalidatePath("/");
+}
+
+export async function updateListCoordinates(
+  listId: number,
+  x: number,
+  y: number
+) {
+  await prisma.list.update({
+    where: {
+      id: listId,
+    },
+    data: {
+      x: x,
+      y: y,
+    },
+  });
 }
