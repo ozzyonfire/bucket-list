@@ -1,17 +1,10 @@
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function loginPage({
-  params,
-  searchParams,
-}: {
-  params: {};
-  searchParams: {
-    token: string;
-  };
-}) {
-  const { token } = searchParams;
+export async function GET(request: NextRequest) {
+  const token = request.nextUrl.searchParams.get("token");
 
   if (token) {
     const passwordlessToken = await prisma.token.findFirst({
@@ -31,7 +24,7 @@ export async function loginPage({
       });
 
       if (!user) {
-        redirect("/register");
+        return NextResponse.redirect("/register");
       }
 
       cookies().set("user", user.id.toString(), {
@@ -40,5 +33,5 @@ export async function loginPage({
     }
   }
 
-  redirect("/");
+  return NextResponse.redirect("/");
 }

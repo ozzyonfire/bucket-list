@@ -43,6 +43,7 @@ export default function ListCard({
     const newItems = [...items];
     const indexA = newItems.findIndex((item) => item.id === itemA);
     const indexB = newItems.findIndex((item) => item.id === itemB);
+    console.log("swapping", indexA, indexB, newItems[indexA], newItems[indexB]);
     const temp = newItems[indexA].order;
     newItems[indexA].order = newItems[indexB].order;
     newItems[indexB].order = temp;

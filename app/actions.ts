@@ -129,10 +129,19 @@ export async function getLists(userId: number) {
 export async function addItem(formData: FormData) {
   const title = formData.get("new-item") as string;
   const listId = parseInt(formData.get("listId") as string);
+  const maxOrder = await prisma.item.findFirst({
+    where: {
+      listId,
+    },
+    orderBy: {
+      order: "desc",
+    },
+  });
   await prisma.item.create({
     data: {
       content: title,
       listId: listId,
+      order: maxOrder ? maxOrder.order + 1 : 1,
     },
   });
   revalidatePath("/");
